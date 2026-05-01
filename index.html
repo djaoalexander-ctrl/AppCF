@@ -26,7 +26,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -67,7 +66,6 @@
             color: #cbd5e1;
         }
 
-        /* Grid principal */
         .dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -203,9 +201,6 @@
             font-size: 0.75rem;
             width: auto;
         }
-        .btn-success {
-            background: #10b981;
-        }
 
         .lista-transacoes {
             max-height: 400px;
@@ -225,10 +220,6 @@
             font-weight: 600;
             margin-bottom: 4px;
             color: #ffffff;
-        }
-        .transacao-cat {
-            font-size: 0.7rem;
-            color: #94a3b8;
         }
         .transacao-data {
             font-size: 0.65rem;
@@ -250,6 +241,15 @@
         }
         .despesa-valor {
             color: #f87171;
+        }
+        .investimento-aplicar-valor {
+            color: #3b82f6;
+        }
+        .investimento-resgatar-valor {
+            color: #34d399;
+        }
+        .investimento-juros-valor {
+            color: #a78bfa;
         }
         .acoes i {
             cursor: pointer;
@@ -289,7 +289,6 @@
             color: #cbd5e1;
         }
 
-        /* Barra de botões inferior */
         .bottom-actions {
             margin-top: 32px;
             padding: 20px 0;
@@ -307,7 +306,6 @@
             gap: 8px;
         }
 
-        /* Modais */
         .modal {
             display: none;
             position: fixed;
@@ -324,7 +322,7 @@
             background: #111827;
             border-radius: 24px;
             padding: 28px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             border: 1px solid #334155;
         }
@@ -359,6 +357,34 @@
             cursor: pointer;
             color: #60a5fa;
             font-size: 1rem;
+        }
+        .tipo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            margin-left: 8px;
+        }
+        .tipo-receita {
+            background: #10b98120;
+            color: #34d399;
+            border: 1px solid #34d399;
+        }
+        .tipo-despesa {
+            background: #ef444420;
+            color: #f87171;
+            border: 1px solid #f87171;
+        }
+        .tipo-investimento {
+            background: #3b82f620;
+            color: #60a5fa;
+            border: 1px solid #60a5fa;
+        }
+
+        .despesa-diaria-valor {
+            color: #fbbf24;
+            font-size: 1.4rem;
+            font-weight: 700;
         }
 
         footer {
@@ -401,7 +427,6 @@
     </div>
 
     <div class="dashboard">
-        <!-- Formulário principal -->
         <div class="card">
             <h3><i class="fas fa-plus-circle"></i> Novo Lançamento</h3>
             
@@ -415,6 +440,16 @@
                 <select id="tipo">
                     <option value="receita">💰 Receita</option>
                     <option value="despesa">💸 Despesa</option>
+                    <option value="investimento">📈 Investimento</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="subTipoGroup" style="display:none;">
+                <label>Operação de Investimento</label>
+                <select id="subTipoInvestimento">
+                    <option value="aplicar">📥 Aplicar (Depositar)</option>
+                    <option value="resgatar">📤 Resgatar (Sacar)</option>
+                    <option value="juros">✨ Juros / Rendimento</option>
                 </select>
             </div>
 
@@ -449,30 +484,29 @@
             <button class="btn" id="btnAdicionar"><i class="fas fa-save"></i> Lançar Transação</button>
         </div>
 
-        <!-- Lista de transações -->
         <div class="card">
             <h3><i class="fas fa-list-ul"></i> Movimentações Recentes</h3>
             <div class="lista-transacoes" id="listaTransacoes">
                 <div style="text-align:center; padding:30px; color:#94a3b8;">Carregando...</div>
             </div>
-            <!-- Botões removidos daqui - movidos para o final da página -->
         </div>
 
-        <!-- Resumo rápido -->
         <div class="card">
             <h3><i class="fas fa-chart-pie"></i> Resumo Financeiro</h3>
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding: 10px 0;">
                 <div><span style="font-weight:600; color:#cbd5e1;">📈 Receitas:</span> <span id="totalReceitas" style="color:#34d399; font-size:1.2rem;">R$0</span></div>
                 <div><span style="font-weight:600; color:#cbd5e1;">📉 Despesas:</span> <span id="totalDespesas" style="color:#f87171; font-size:1.2rem;">R$0</span></div>
             </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <div><span style="font-weight:600; color:#cbd5e1;">💰 Total Investido:</span> <span id="totalInvestido" style="color:#60a5fa; font-size:1.2rem;">R$0</span></div>
+            </div>
             <div style="border-top: 1px solid #1e293b; padding-top: 15px;">
-                <div style="color:#cbd5e1;"><i class="fas fa-trophy"></i> Top Categorias (Despesas)</div>
-                <div id="topCategorias" style="font-size:0.8rem; margin-top: 10px; color:#94a3b8;">-</div>
+                <div style="color:#cbd5e1;"><i class="fas fa-calendar-day"></i> Despesa Diária</div>
+                <div id="despesaDiaria" class="despesa-diaria-valor">R$ 0,00</div>
             </div>
         </div>
     </div>
 
-    <!-- Gráficos -->
     <div class="graficos-row">
         <div class="grafico-card">
             <h3><i class="fas fa-chart-line"></i> Evolução Mensal</h3>
@@ -489,7 +523,7 @@
         </div>
         
         <div class="grafico-card">
-            <h3><i class="fas fa-layer-group"></i> Despesas por Subcategorias</h3>
+            <h3><i class="fas fa-chart-bar"></i> Despesas por Subcategorias</h3>
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>Selecione o mês:</label>
                 <input type="month" id="filtroMesSubcategoria" style="width: 100%;">
@@ -498,7 +532,6 @@
         </div>
     </div>
 
-    <!-- Botões movidos para o final da página -->
     <div class="bottom-actions">
         <button id="btnExemplo" class="icon-btn"><i class="fas fa-chart-line"></i> Exemplos</button>
         <button id="btnLimparTudo" class="icon-btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
@@ -510,7 +543,6 @@
     <footer><i class="fas fa-crown"></i> Desenvolvido por Djão Alexander • Since 05/2026 • Versão 0.00</footer>
 </div>
 
-<!-- Modal de Gerenciamento de Categorias/Subcategorias -->
 <div id="modalCategorias" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -518,11 +550,13 @@
             <button class="close-modal" onclick="fecharModalCategorias()">&times;</button>
         </div>
         <div id="listaCategoriasAdmin"></div>
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #1e293b;">
+            <p style="font-size: 0.75rem; color: #94a3b8;"><i class="fas fa-info-circle"></i> Categorias são filtradas por tipo ao selecionar Receita/Despesa/Investimento</p>
+        </div>
     </div>
 </div>
 
 <script>
-    // ====================== SAUDAÇÃO DINÂMICA ======================
     function atualizarSaudacao() {
         const agora = new Date();
         const hora = agora.getHours();
@@ -539,18 +573,28 @@
         document.getElementById("saudacaoMensagem").innerHTML = saudacao;
     }
     
-    // ====================== DADOS GLOBAIS ======================
     let transacoes = [];
-    let categorias = new Set(["Alimentação", "Moradia", "Transporte", "Saúde", "Educação", "Lazer", "Salário", "Freelance", "Investimentos", "Outros"]);
+    let categoriasList = [
+        { nome: "Alimentação", tipo: "despesa" },
+        { nome: "Moradia", tipo: "despesa" },
+        { nome: "Transporte", tipo: "despesa" },
+        { nome: "Saúde", tipo: "despesa" },
+        { nome: "Educação", tipo: "despesa" },
+        { nome: "Lazer", tipo: "despesa" },
+        { nome: "Salário", tipo: "receita" },
+        { nome: "Freelance", tipo: "receita" },
+        { nome: "Resgate", tipo: "receita" },
+        { nome: "Investimentos", tipo: "investimento" },
+        { nome: "Outros", tipo: "outros" }
+    ];
     let subcategorias = new Map();
 
-    // ====================== INICIALIZAÇÃO ======================
     function carregarDados() {
-        const saved = localStorage.getItem("fincontrol_pro");
+        const saved = localStorage.getItem("fincontrol_pro_v5");
         if(saved) {
             const data = JSON.parse(saved);
             transacoes = data.transacoes || [];
-            if(data.categorias) categorias = new Set(data.categorias);
+            if(data.categoriasList) categoriasList = data.categoriasList;
             if(data.subcategorias) {
                 subcategorias = new Map();
                 for(let [cat, subs] of Object.entries(data.subcategorias)) {
@@ -564,7 +608,7 @@
                 { id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Salário", subcategoria: "CLT", observacao: "Salário mensal", valor: 5800 },
                 { id: Date.now()+2, data: hoje, tipo: "despesa", categoria: "Moradia", subcategoria: "Aluguel", observacao: "Aluguel apartamento", valor: 1500 },
                 { id: Date.now()+3, data: "2025-04-10", tipo: "despesa", categoria: "Alimentação", subcategoria: "Mercado", observacao: "Supermercado", valor: 580 },
-                { id: Date.now()+4, data: "2025-04-12", tipo: "despesa", categoria: "Lazer", subcategoria: "Cinema", observacao: "Ingressos", valor: 75 }
+                { id: Date.now()+4, data: hoje, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 1000 }
             ];
         }
         atualizarSelectCategorias();
@@ -576,25 +620,41 @@
         for(let [cat, subs] of subcategorias.entries()) {
             subObj[cat] = Array.from(subs);
         }
-        localStorage.setItem("fincontrol_pro", JSON.stringify({
+        localStorage.setItem("fincontrol_pro_v5", JSON.stringify({
             transacoes: transacoes,
-            categorias: Array.from(categorias),
+            categoriasList: categoriasList,
             subcategorias: subObj
         }));
     }
 
+    function getCategoriasPorTipo(tipoSelecionado) {
+        return categoriasList.filter(cat => {
+            if (cat.tipo === "outros") return true;
+            return cat.tipo === tipoSelecionado;
+        });
+    }
+
     function atualizarSelectCategorias() {
+        const tipoSelecionado = document.getElementById("tipo").value;
         const select = document.getElementById("categoriaSelect");
         const valorAtual = select.value;
         select.innerHTML = "";
-        Array.from(categorias).sort().forEach(cat => {
+        
+        const categoriasFiltradas = getCategoriasPorTipo(tipoSelecionado);
+        categoriasFiltradas.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(cat => {
             const option = document.createElement("option");
-            option.value = cat;
-            option.textContent = cat;
+            option.value = cat.nome;
+            option.textContent = cat.nome;
             select.appendChild(option);
         });
-        if(categorias.has(valorAtual)) select.value = valorAtual;
-        else if(categorias.size > 0) select.value = Array.from(categorias)[0];
+        
+        if(categoriasFiltradas.some(c => c.nome === valorAtual)) {
+            select.value = valorAtual;
+        } else if(categoriasFiltradas.length > 0) {
+            select.value = categoriasFiltradas[0].nome;
+        }
+        
+        atualizarSelectSubcategorias();
     }
 
     function atualizarSelectSubcategorias() {
@@ -615,59 +675,61 @@
         }
     }
 
-    // CRUD de Categorias
-    function adicionarCategoria(nome) {
+    function adicionarCategoria(nome, tipo) {
         nome = nome.trim();
         if(!nome) return false;
-        if(categorias.has(nome)) return false;
-        categorias.add(nome);
+        if(categoriasList.some(c => c.nome === nome)) return false;
+        categoriasList.push({ nome: nome, tipo: tipo });
         if(!subcategorias.has(nome)) subcategorias.set(nome, new Set());
         salvarDados();
         atualizarSelectCategorias();
         return true;
     }
 
-    function editarCategoria(nomeAntigo, nomeNovo) {
+    function editarCategoria(nomeAntigo, nomeNovo, novoTipo) {
         nomeNovo = nomeNovo.trim();
-        if(!nomeNovo || categorias.has(nomeNovo)) return false;
+        if(!nomeNovo || categoriasList.some(c => c.nome === nomeNovo && c.nome !== nomeAntigo)) return false;
+        
         transacoes.forEach(t => {
             if(t.categoria === nomeAntigo) t.categoria = nomeNovo;
         });
+        
         if(subcategorias.has(nomeAntigo)) {
             subcategorias.set(nomeNovo, subcategorias.get(nomeAntigo));
             subcategorias.delete(nomeAntigo);
         }
-        categorias.delete(nomeAntigo);
-        categorias.add(nomeNovo);
+        
+        const index = categoriasList.findIndex(c => c.nome === nomeAntigo);
+        if(index !== -1) {
+            categoriasList[index] = { nome: nomeNovo, tipo: novoTipo };
+        }
+        
         salvarDados();
         atualizarSelectCategorias();
         return true;
     }
 
-    // FUNÇÃO EXCLUIR CATEGORIA CORRIGIDA
     window.excluirCategoria = function(nome) {
         if(confirm(`Excluir categoria "${nome}"? Todas as transações serão movidas para "Outros".`)) {
-            // Garantir que a categoria "Outros" existe
-            if (!categorias.has("Outros")) {
-                categorias.add("Outros");
-                if(!subcategorias.has("Outros")) subcategorias.set("Outros", new Set());
+            if (!categoriasList.some(c => c.nome === "Outros")) {
+                categoriasList.push({ nome: "Outros", tipo: "outros" });
             }
             
             transacoes.forEach(t => {
                 if(t.categoria === nome) t.categoria = "Outros";
             });
-            categorias.delete(nome);
+            
+            categoriasList = categoriasList.filter(c => c.nome !== nome);
             subcategorias.delete(nome);
             salvarDados();
             atualizarSelectCategorias();
             atualizarTudo();
-            abrirModalCategorias(); // Recarrega o modal
+            abrirModalCategorias();
             return true;
         }
         return false;
     };
 
-    // CRUD de Subcategorias
     function adicionarSubcategoria(categoria, subNome) {
         subNome = subNome.trim();
         if(!subNome) return false;
@@ -680,60 +742,43 @@
         return true;
     }
 
-    function editarSubcategoria(categoria, subAntiga, subNova) {
-        subNova = subNova.trim();
-        if(!subNova) return false;
-        if(!subcategorias.has(categoria)) return false;
-        const subs = subcategorias.get(categoria);
-        if(subs.has(subNova)) return false;
-        transacoes.forEach(t => {
-            if(t.categoria === categoria && t.subcategoria === subAntiga) t.subcategoria = subNova;
-        });
-        subs.delete(subAntiga);
-        subs.add(subNova);
-        salvarDados();
-        atualizarSelectSubcategorias();
-        return true;
-    }
-
-    function excluirSubcategoria(categoria, subNome) {
-        if(confirm(`Excluir subcategoria "${subNome}" da categoria "${categoria}"?`)) {
-            if(subcategorias.has(categoria)) {
-                subcategorias.get(categoria).delete(subNome);
-                transacoes.forEach(t => {
-                    if(t.categoria === categoria && t.subcategoria === subNome) t.subcategoria = null;
-                });
-                salvarDados();
-                atualizarSelectSubcategorias();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // ====================== FUNÇÕES DE UI ======================
     function formatarMoeda(valor) {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
     }
 
     function atualizarResumo() {
-        let totalReceitas = 0, totalDespesas = 0;
+        let totalReceitas = 0, totalDespesas = 0, totalInvestido = 0;
         transacoes.forEach(t => {
-            if(t.tipo === "receita") totalReceitas += t.valor;
-            else totalDespesas += t.valor;
+            if(t.tipo === "receita") {
+                totalReceitas += t.valor;
+            } else if(t.tipo === "despesa") {
+                totalDespesas += t.valor;
+            } else if(t.tipo === "investimento") {
+                if(t.subTipo === "aplicar") {
+                    totalInvestido += t.valor;
+                    totalDespesas += t.valor; // CORREÇÃO: Aplicar subtrai do saldo total
+                } else if(t.subTipo === "resgatar") {
+                    totalInvestido -= t.valor;
+                    totalReceitas += t.valor; // Resgate entra como receita
+                } else if(t.subTipo === "juros") {
+                    totalInvestido += t.valor; // Juros aumenta o investido, mas não afeta saldo
+                }
+            }
         });
         const saldo = totalReceitas - totalDespesas;
         document.getElementById("saldoTotal").innerHTML = formatarMoeda(saldo);
         document.getElementById("totalReceitas").innerHTML = formatarMoeda(totalReceitas);
         document.getElementById("totalDespesas").innerHTML = formatarMoeda(totalDespesas);
+        document.getElementById("totalInvestido").innerHTML = formatarMoeda(totalInvestido);
         
-        const catMap = new Map();
-        transacoes.filter(t => t.tipo === "despesa").forEach(t => {
-            catMap.set(t.categoria, (catMap.get(t.categoria) || 0) + t.valor);
+        const hoje = new Date().toISOString().slice(0,10);
+        let despesaDiaria = 0;
+        transacoes.forEach(t => {
+            if((t.tipo === "despesa" || (t.tipo === "investimento" && t.subTipo === "aplicar")) && t.data === hoje) {
+                despesaDiaria += t.valor;
+            }
         });
-        const top = Array.from(catMap.entries()).sort((a,b) => b[1]-a[1]).slice(0,3);
-        if(top.length === 0) document.getElementById("topCategorias").innerHTML = "-";
-        else document.getElementById("topCategorias").innerHTML = top.map(([c,v]) => `${c} (${formatarMoeda(v)})`).join(" • ");
+        document.getElementById("despesaDiaria").innerHTML = formatarMoeda(despesaDiaria);
     }
 
     function renderizarLista() {
@@ -744,14 +789,41 @@
         }
         let html = "";
         [...transacoes].sort((a,b) => (b.data || "").localeCompare(a.data || "")).slice(0,20).forEach(t => {
-            const classeValor = t.tipo === "receita" ? "receita-valor" : "despesa-valor";
-            const sinal = t.tipo === "receita" ? "+" : "-";
+            let classeValor, sinal, emoji, displayTipo;
+            if(t.tipo === "receita") {
+                classeValor = "receita-valor";
+                sinal = "+";
+                emoji = "💰";
+                displayTipo = "Receita";
+            } else if(t.tipo === "despesa") {
+                classeValor = "despesa-valor";
+                sinal = "-";
+                emoji = "💸";
+                displayTipo = "Despesa";
+            } else {
+                if(t.subTipo === "aplicar") {
+                    classeValor = "investimento-aplicar-valor";
+                    sinal = "-";
+                    emoji = "📥";
+                    displayTipo = "Investimento - Aplicar";
+                } else if(t.subTipo === "resgatar") {
+                    classeValor = "investimento-resgatar-valor";
+                    sinal = "+";
+                    emoji = "📤";
+                    displayTipo = "Investimento - Resgatar";
+                } else {
+                    classeValor = "investimento-juros-valor";
+                    sinal = "+";
+                    emoji = "✨";
+                    displayTipo = "Investimento - Juros";
+                }
+            }
             const dataFormatada = t.data ? t.data.split('-').reverse().join('/') : "Sem data";
             html += `
                 <div class="transacao-item">
                     <div class="transacao-info">
                         <div class="transacao-data"><i class="far fa-calendar-alt"></i> ${dataFormatada}</div>
-                        <div class="transacao-tipo">${t.tipo === "receita" ? "💰" : "💸"} ${t.categoria} ${t.subcategoria ? `• ${t.subcategoria}` : ''}</div>
+                        <div class="transacao-tipo">${emoji} ${displayTipo} • ${t.categoria} ${t.subcategoria ? `• ${t.subcategoria}` : ''}</div>
                         ${t.observacao ? `<div class="transacao-obs"><i class="fas fa-comment"></i> ${escapeHtml(t.observacao)}</div>` : ''}
                     </div>
                     <div style="display: flex; align-items: center;">
@@ -780,13 +852,18 @@
         document.getElementById("valor").value = "";
         document.getElementById("subcategoriaSelect").value = "";
         document.getElementById("tipo").value = "receita";
-        atualizarSelectSubcategorias();
+        document.getElementById("subTipoGroup").style.display = "none";
+        atualizarSelectCategorias();
     }
 
     function adicionarTransacao() {
         let data = document.getElementById("dataLancamento").value;
         if(!data) data = new Date().toISOString().slice(0,10);
         const tipo = document.getElementById("tipo").value;
+        let subTipo = null;
+        if(tipo === "investimento") {
+            subTipo = document.getElementById("subTipoInvestimento").value;
+        }
         const categoria = document.getElementById("categoriaSelect").value;
         let subcategoria = document.getElementById("subcategoriaSelect").value;
         const observacao = document.getElementById("observacao").value.trim();
@@ -808,6 +885,10 @@
             valor: valor
         };
         
+        if(tipo === "investimento") {
+            novaTransacao.subTipo = subTipo;
+        }
+        
         transacoes.push(novaTransacao);
         salvarDados();
         
@@ -820,7 +901,6 @@
         setTimeout(() => { btn.innerHTML = originalText; }, 1500);
     }
 
-    // ====================== FUNÇÃO PARA INICIALIZAR FILTROS COM MÊS ATUAL ======================
     function inicializarFiltrosMes() {
         const hoje = new Date();
         const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
@@ -828,29 +908,57 @@
         document.getElementById("filtroMesSubcategoria").value = anoMes;
     }
 
-    // ====================== GRÁFICOS ======================
     google.charts.load('current', { packages: ['corechart'] });
     
     function desenharGraficos() {
-        // 1. Gráfico de Evolução Mensal
+        // Evolução Mensal com INVESTIMENTO ACUMULADO (cor azul)
         const mesesMap = new Map();
+        const investimentoAcumulado = new Map();
+        let acumulado = 0;
+        const todasDatas = [...transacoes].filter(t => t.data && t.data.length >= 7);
+        todasDatas.sort((a,b) => (a.data || "").localeCompare(b.data || ""));
+        
+        todasDatas.forEach(t => {
+            if(t.tipo === "investimento") {
+                if(t.subTipo === "aplicar") {
+                    acumulado += t.valor;
+                } else if(t.subTipo === "resgatar") {
+                    acumulado -= t.valor;
+                } else if(t.subTipo === "juros") {
+                    acumulado += t.valor;
+                }
+            }
+            const mesAno = t.data.slice(0,7);
+            investimentoAcumulado.set(mesAno, acumulado);
+        });
+        
         transacoes.forEach(t => {
             if(t.data && t.data.length >= 7) {
                 const mesAno = t.data.slice(0,7);
                 if(!mesesMap.has(mesAno)) mesesMap.set(mesAno, { receita: 0, despesa: 0 });
                 const m = mesesMap.get(mesAno);
-                if(t.tipo === "receita") m.receita += t.valor;
-                else m.despesa += t.valor;
+                if(t.tipo === "receita") {
+                    m.receita += t.valor;
+                } else if(t.tipo === "despesa") {
+                    m.despesa += t.valor;
+                } else if(t.tipo === "investimento" && t.subTipo === "aplicar") {
+                    m.despesa += t.valor; // CORREÇÃO: Aplicar entra como despesa no gráfico
+                } else if(t.tipo === "investimento" && t.subTipo === "resgatar") {
+                    m.receita += t.valor; // Resgate entra como receita
+                }
+                // Juros não entra no gráfico de receita/despesa
             }
         });
+        
         let mesesOrdenados = Array.from(mesesMap.keys()).sort().slice(-6);
-        let barData = [["Mês", "Receitas", "Despesas"]];
+        let barData = [["Mês", "Receitas", "Despesas", "Saldo Investido"]];
         if(mesesOrdenados.length === 0) {
-            barData.push(["Sem dados", 0, 0]);
+            barData.push(["Sem dados", 0, 0, 0]);
         } else {
             mesesOrdenados.forEach(m => { 
-                const vals = mesesMap.get(m); 
-                barData.push([m, vals.receita, vals.despesa]); 
+                const vals = mesesMap.get(m);
+                const invAcum = investimentoAcumulado.get(m) || 0;
+                barData.push([m, vals.receita, vals.despesa, invAcum]); 
             });
         }
         const barTable = google.visualization.arrayToDataTable(barData);
@@ -859,12 +967,12 @@
             backgroundColor: 'transparent', 
             legend: { textStyle: { color: '#cbd5e1' } },
             titleTextStyle: { color: '#ffffff' },
-            colors: ['#34d399', '#f87171'], 
+            colors: ['#34d399', '#f87171', '#3b82f6'], 
             hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
             vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } }
         });
         
-        // 2. Gráfico de Despesas por Categoria com filtro
+        // Despesas por Categoria
         const mesSelecionado = document.getElementById("filtroMesCategoria").value;
         const despMap = new Map();
         transacoes.filter(t => {
@@ -895,7 +1003,7 @@
             pieSliceTextStyle: { color: '#ffffff' }
         });
         
-        // 3. Gráfico de Subcategorias com filtro
+        // Subcategorias
         const mesSelecionadoSub = document.getElementById("filtroMesSubcategoria").value;
         const subMap = new Map();
         transacoes.filter(t => {
@@ -911,23 +1019,42 @@
         });
         
         let subData = [["Subcategoria", "Total"]];
+        const cores = ['#60a5fa', '#34d399', '#f87171', '#fbbf24', '#a78bfa', '#f472b6', '#2dd4bf', '#fb923c'];
+        
         if(subMap.size === 0) {
             subData.push(["Nenhuma despesa neste mês", 1]);
+            const subTable = google.visualization.arrayToDataTable(subData);
+            const subChart = new google.visualization.BarChart(document.getElementById('graficoSubcategorias'));
+            subChart.draw(subTable, { 
+                title: mesSelecionadoSub ? `Despesas por Subcategorias - ${mesSelecionadoSub}` : 'Despesas por Subcategorias',
+                backgroundColor: 'transparent', 
+                legend: { position: 'none' },
+                titleTextStyle: { color: '#ffffff' },
+                hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
+                vAxis: { textStyle: { color: '#cbd5e1' }, titleTextStyle: { color: '#ffffff' } }, 
+                colors: ['#60a5fa']
+            });
         } else {
-            const sortedSub = Array.from(subMap.entries()).sort((a,b) => b[1]-a[1]).slice(0,6);
+            const sortedSub = Array.from(subMap.entries()).sort((a,b) => b[1]-a[1]).slice(0,8);
             sortedSub.forEach(([k, v]) => subData.push([k, v]));
+            const subTable = google.visualization.arrayToDataTable(subData);
+            const subChart = new google.visualization.BarChart(document.getElementById('graficoSubcategorias'));
+            
+            const barCores = [];
+            for(let i = 0; i < sortedSub.length; i++) {
+                barCores.push(cores[i % cores.length]);
+            }
+            
+            subChart.draw(subTable, { 
+                title: mesSelecionadoSub ? `Despesas por Subcategorias - ${mesSelecionadoSub}` : 'Despesas por Subcategorias',
+                backgroundColor: 'transparent', 
+                legend: { position: 'none' },
+                titleTextStyle: { color: '#ffffff' },
+                hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
+                vAxis: { textStyle: { color: '#cbd5e1' }, titleTextStyle: { color: '#ffffff' } }, 
+                colors: barCores
+            });
         }
-        const subTable = google.visualization.arrayToDataTable(subData);
-        const subChart = new google.visualization.BarChart(document.getElementById('graficoSubcategorias'));
-        subChart.draw(subTable, { 
-            title: mesSelecionadoSub ? `Subcategorias - ${mesSelecionadoSub}` : 'Subcategorias (Despesas)',
-            backgroundColor: 'transparent', 
-            legend: { position: 'none' },
-            titleTextStyle: { color: '#ffffff' },
-            hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
-            vAxis: { textStyle: { color: '#cbd5e1' }, titleTextStyle: { color: '#ffffff' } }, 
-            colors: ['#60a5fa']
-        });
     }
     
     function atualizarTudo() {
@@ -937,11 +1064,10 @@
         else google.charts.setOnLoadCallback(() => desenharGraficos());
     }
     
-    // ====================== BACKUP ======================
     function fazerBackup() {
         const dados = {
             transacoes: transacoes,
-            categorias: Array.from(categorias),
+            categoriasList: categoriasList,
             subcategorias: Object.fromEntries(Array.from(subcategorias.entries()).map(([k,v]) => [k, Array.from(v)])),
             dataBackup: new Date().toISOString()
         };
@@ -960,7 +1086,19 @@
             try {
                 const dados = JSON.parse(e.target.result);
                 transacoes = dados.transacoes || [];
-                categorias = new Set(dados.categorias || ["Alimentação", "Moradia", "Transporte", "Saúde", "Educação", "Lazer", "Salário", "Freelance", "Investimentos", "Outros"]);
+                categoriasList = dados.categoriasList || [
+                    { nome: "Alimentação", tipo: "despesa" },
+                    { nome: "Moradia", tipo: "despesa" },
+                    { nome: "Transporte", tipo: "despesa" },
+                    { nome: "Saúde", tipo: "despesa" },
+                    { nome: "Educação", tipo: "despesa" },
+                    { nome: "Lazer", tipo: "despesa" },
+                    { nome: "Salário", tipo: "receita" },
+                    { nome: "Freelance", tipo: "receita" },
+                    { nome: "Resgate", tipo: "receita" },
+                    { nome: "Investimentos", tipo: "investimento" },
+                    { nome: "Outros", tipo: "outros" }
+                ];
                 subcategorias = new Map();
                 if(dados.subcategorias) {
                     for(let [cat, subs] of Object.entries(dados.subcategorias)) {
@@ -979,38 +1117,86 @@
         reader.readAsText(file);
     }
     
-    // ====================== MODAL CATEGORIAS ======================
     function abrirModalCategorias() {
         const modal = document.getElementById("modalCategorias");
         const container = document.getElementById("listaCategoriasAdmin");
         container.innerHTML = "";
-        Array.from(categorias).sort().forEach(cat => {
+        
+        const addDiv = document.createElement("div");
+        addDiv.className = "list-item";
+        addDiv.style.background = "#1e293b";
+        addDiv.style.marginBottom = "15px";
+        addDiv.innerHTML = `
+            <div style="flex:1">
+                <input type="text" id="novaCatNome" placeholder="Nova categoria" style="width:100%; margin-bottom:8px;">
+                <select id="novaCatTipo" style="width:100%">
+                    <option value="receita">💰 Receita</option>
+                    <option value="despesa">💸 Despesa</option>
+                    <option value="investimento">📈 Investimento</option>
+                    <option value="outros">🔄 Ambas</option>
+                </select>
+            </div>
+            <button class="icon-btn" id="confirmarNovaCatModal" style="margin-left:10px;"><i class="fas fa-plus"></i> Adicionar</button>
+        `;
+        container.appendChild(addDiv);
+        
+        categoriasList.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(cat => {
+            let tipoLabel, tipoClass;
+            if(cat.tipo === "receita") {
+                tipoLabel = "💰 Receita";
+                tipoClass = "tipo-receita";
+            } else if(cat.tipo === "despesa") {
+                tipoLabel = "💸 Despesa";
+                tipoClass = "tipo-despesa";
+            } else if(cat.tipo === "investimento") {
+                tipoLabel = "📈 Investimento";
+                tipoClass = "tipo-investimento";
+            } else {
+                tipoLabel = "🔄 Ambas";
+                tipoClass = "";
+            }
             const div = document.createElement("div");
             div.className = "list-item";
             div.innerHTML = `
-                <div><strong>${escapeHtml(cat)}</strong>
+                <div>
+                    <strong>${escapeHtml(cat.nome)}</strong>
+                    <span class="tipo-badge ${tipoClass}">${tipoLabel}</span>
                     <div style="font-size:0.7rem; color:#94a3b8; margin-top:4px;">
-                        Subcategorias: ${subcategorias.has(cat) ? Array.from(subcategorias.get(cat)).join(", ") || "nenhuma" : "nenhuma"}
+                        Subcategorias: ${subcategorias.has(cat.nome) ? Array.from(subcategorias.get(cat.nome)).join(", ") || "nenhuma" : "nenhuma"}
                     </div>
                 </div>
                 <div class="list-item-actions">
-                    <button onclick="editarCategoriaPrompt('${cat}')"><i class="fas fa-edit"></i></button>
-                    <button onclick="excluirCategoria('${cat}')"><i class="fas fa-trash"></i></button>
-                    <button onclick="gerenciarSubcategorias('${cat}')"><i class="fas fa-plus-circle"></i> Sub</button>
+                    <button onclick="editarCategoriaPrompt('${cat.nome}')"><i class="fas fa-edit"></i></button>
+                    <button onclick="excluirCategoria('${cat.nome}')"><i class="fas fa-trash"></i></button>
+                    <button onclick="gerenciarSubcategorias('${cat.nome}')"><i class="fas fa-plus-circle"></i> Sub</button>
                 </div>
             `;
             container.appendChild(div);
         });
+        
+        document.getElementById("confirmarNovaCatModal").addEventListener("click", () => {
+            const nome = document.getElementById("novaCatNome").value;
+            const tipo = document.getElementById("novaCatTipo").value;
+            if(nome && adicionarCategoria(nome, tipo)) {
+                document.getElementById("novaCatNome").value = "";
+                abrirModalCategorias();
+            } else if(nome) alert("Categoria já existe!");
+        });
+        
         modal.style.display = "flex";
     }
     
     window.editarCategoriaPrompt = function(catAntiga) {
+        const cat = categoriasList.find(c => c.nome === catAntiga);
         const novoNome = prompt("Novo nome da categoria:", catAntiga);
-        if(novoNome && novoNome !== catAntiga) {
-            if(editarCategoria(catAntiga, novoNome)) {
+        const novoTipo = prompt("Tipo (receita/despesa/investimento/outros):", cat ? cat.tipo : "outros");
+        if(novoNome && novoNome !== catAntiga && (novoTipo === "receita" || novoTipo === "despesa" || novoTipo === "investimento" || novoTipo === "outros")) {
+            if(editarCategoria(catAntiga, novoNome, novoTipo)) {
                 abrirModalCategorias();
                 atualizarTudo();
             } else alert("Categoria já existe ou nome inválido!");
+        } else if(novoNome && novoNome !== catAntiga) {
+            alert("Tipo inválido! Use: receita, despesa, investimento ou outros");
         }
     };
     
@@ -1046,19 +1232,50 @@
         }
     };
     
+    window.editarSubcategoria = function(categoria, subAntiga, subNova) {
+        subNova = subNova.trim();
+        if(!subNova) return false;
+        if(!subcategorias.has(categoria)) return false;
+        const subs = subcategorias.get(categoria);
+        if(subs.has(subNova)) return false;
+        transacoes.forEach(t => {
+            if(t.categoria === categoria && t.subcategoria === subAntiga) t.subcategoria = subNova;
+        });
+        subs.delete(subAntiga);
+        subs.add(subNova);
+        salvarDados();
+        atualizarSelectSubcategorias();
+        return true;
+    };
+    
+    window.excluirSubcategoria = function(categoria, subNome) {
+        if(confirm(`Excluir subcategoria "${subNome}" da categoria "${categoria}"?`)) {
+            if(subcategorias.has(categoria)) {
+                subcategorias.get(categoria).delete(subNome);
+                transacoes.forEach(t => {
+                    if(t.categoria === categoria && t.subcategoria === subNome) t.subcategoria = null;
+                });
+                salvarDados();
+                atualizarSelectSubcategorias();
+                return true;
+            }
+        }
+        return false;
+    };
+    
     function fecharModalCategorias() { document.getElementById("modalCategorias").style.display = "none"; }
     
-    // ====================== FUNÇÃO PARA EXEMPLOS ======================
     function carregarExemplos() {
         const hoje = new Date().toISOString().slice(0,10);
         transacoes.push({ id: Date.now(), data: hoje, tipo: "despesa", categoria: "Lazer", subcategoria: "Restaurante", observacao: "Jantar", valor: 120 });
         transacoes.push({ id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Freelance", subcategoria: "Design", observacao: "Projeto", valor: 500 });
+        transacoes.push({ id: Date.now()+2, data: hoje, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 300 });
+        transacoes.push({ id: Date.now()+3, data: hoje, tipo: "investimento", subTipo: "juros", categoria: "Investimentos", subcategoria: "Rendimento", observacao: "Juros mensais", valor: 50 });
         salvarDados();
         atualizarTudo();
         alert("Exemplos adicionados com sucesso!");
     }
     
-    // ====================== FUNÇÃO PARA LIMPAR TUDO ======================
     function limparTudo() {
         if(confirm("⚠️ ATENÇÃO! Isso apagará TODAS as transações. Deseja continuar?")) {
             transacoes = [];
@@ -1068,10 +1285,20 @@
         }
     }
     
-    // ====================== EVENTOS ======================
+    // Eventos
     document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
     document.getElementById("btnExemplo").addEventListener("click", carregarExemplos);
     document.getElementById("btnLimparTudo").addEventListener("click", limparTudo);
+    document.getElementById("tipo").addEventListener("change", () => {
+        atualizarSelectCategorias();
+        const tipo = document.getElementById("tipo").value;
+        const subTipoGroup = document.getElementById("subTipoGroup");
+        if(tipo === "investimento") {
+            subTipoGroup.style.display = "block";
+        } else {
+            subTipoGroup.style.display = "none";
+        }
+    });
     document.getElementById("categoriaSelect").addEventListener("change", () => atualizarSelectSubcategorias());
     document.getElementById("btnCategorias").addEventListener("click", abrirModalCategorias);
     document.getElementById("btnBackup").addEventListener("click", fazerBackup);
@@ -1084,7 +1311,11 @@
     });
     document.getElementById("btnNovaCategoria").addEventListener("click", () => {
         const nome = prompt("Nova categoria:");
-        if(nome && adicionarCategoria(nome)) alert("Categoria adicionada!");
+        const tipo = prompt("Tipo (receita/despesa/investimento/outros):", "despesa");
+        if(nome && (tipo === "receita" || tipo === "despesa" || tipo === "investimento" || tipo === "outros")) {
+            if(adicionarCategoria(nome, tipo)) alert("Categoria adicionada!");
+            else alert("Categoria já existe!");
+        } else if(nome) alert("Tipo inválido! Use: receita, despesa, investimento ou outros");
     });
     document.getElementById("btnNovaSubcategoria").addEventListener("click", () => {
         const categoria = document.getElementById("categoriaSelect").value;
@@ -1095,22 +1326,17 @@
         }
     });
     
-    // Eventos dos filtros de mês
     document.getElementById("filtroMesCategoria").addEventListener("change", () => desenharGraficos());
     document.getElementById("filtroMesSubcategoria").addEventListener("change", () => desenharGraficos());
     
-    // Data padrão = hoje
     document.getElementById("dataLancamento").valueAsDate = new Date();
     
-    // Inicializar saudação, filtros e dados
     atualizarSaudacao();
     inicializarFiltrosMes();
     carregarDados();
     atualizarTudo();
     
-    // Atualizar saudação a cada minuto
     setInterval(atualizarSaudacao, 60000);
 </script>
 </body>
 </html>
-

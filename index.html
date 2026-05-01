@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -122,6 +121,19 @@
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             transition: all 0.2s;
+        }
+
+        input[type="month"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1.5px solid #1e293b;
+            background: #0f172a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
         }
 
         textarea {
@@ -266,6 +278,15 @@
         }
         .grafico-card h3 {
             color: #ffffff;
+        }
+        .grafico-card .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .grafico-card .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #cbd5e1;
         }
 
         /* Barra de botões inferior */
@@ -434,10 +455,7 @@
             <div class="lista-transacoes" id="listaTransacoes">
                 <div style="text-align:center; padding:30px; color:#94a3b8;">Carregando...</div>
             </div>
-            <div style="margin-top: 16px; display: flex; gap: 8px;">
-                <button id="btnExemplo" class="btn btn-outline btn-sm"><i class="fas fa-chart-line"></i> Exemplos</button>
-                <button id="btnLimparTudo" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
-            </div>
+            <!-- Botões removidos daqui - movidos para o final da página -->
         </div>
 
         <!-- Resumo rápido -->
@@ -454,15 +472,13 @@
         </div>
     </div>
 
-    <!-- Gráficos - Nova ordem: Evolução Mensal, Despesas por Categoria, Subcategorias -->
+    <!-- Gráficos -->
     <div class="graficos-row">
-        <!-- 1. Evolução Mensal -->
         <div class="grafico-card">
             <h3><i class="fas fa-chart-line"></i> Evolução Mensal</h3>
             <div id="graficoEvolucao" style="width:100%; height: 300px;"></div>
         </div>
         
-        <!-- 2. Despesas por Categoria com filtro de mês -->
         <div class="grafico-card">
             <h3><i class="fas fa-chart-pie"></i> Despesas por Categoria</h3>
             <div class="form-group" style="margin-bottom: 15px;">
@@ -472,7 +488,6 @@
             <div id="graficoPizza" style="width:100%; height: 280px;"></div>
         </div>
         
-        <!-- 3. Subcategorias com filtro de mês -->
         <div class="grafico-card">
             <h3><i class="fas fa-layer-group"></i> Subcategorias (Despesas)</h3>
             <div class="form-group" style="margin-bottom: 15px;">
@@ -485,6 +500,8 @@
 
     <!-- Botões movidos para o final da página -->
     <div class="bottom-actions">
+        <button id="btnExemplo" class="icon-btn"><i class="fas fa-chart-line"></i> Exemplos</button>
+        <button id="btnLimparTudo" class="icon-btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
         <button id="btnCategorias" class="icon-btn"><i class="fas fa-tags"></i> Gerenciar Categorias/Sub</button>
         <button id="btnBackup" class="icon-btn"><i class="fas fa-download"></i> Backup</button>
         <button id="btnRestore" class="icon-btn"><i class="fas fa-upload"></i> Restaurar Backup</button>
@@ -627,8 +644,15 @@
         return true;
     }
 
-    function excluirCategoria(nome) {
+    // FUNÇÃO EXCLUIR CATEGORIA CORRIGIDA
+    window.excluirCategoria = function(nome) {
         if(confirm(`Excluir categoria "${nome}"? Todas as transações serão movidas para "Outros".`)) {
+            // Garantir que a categoria "Outros" existe
+            if (!categorias.has("Outros")) {
+                categorias.add("Outros");
+                if(!subcategorias.has("Outros")) subcategorias.set("Outros", new Set());
+            }
+            
             transacoes.forEach(t => {
                 if(t.categoria === nome) t.categoria = "Outros";
             });
@@ -636,10 +660,12 @@
             subcategorias.delete(nome);
             salvarDados();
             atualizarSelectCategorias();
+            atualizarTudo();
+            abrirModalCategorias(); // Recarrega o modal
             return true;
         }
         return false;
-    }
+    };
 
     // CRUD de Subcategorias
     function adicionarSubcategoria(categoria, subNome) {
@@ -802,11 +828,11 @@
         document.getElementById("filtroMesSubcategoria").value = anoMes;
     }
 
-    // ====================== GRÁFICOS COM FILTROS E CORES CORRIGIDAS ======================
+    // ====================== GRÁFICOS ======================
     google.charts.load('current', { packages: ['corechart'] });
     
     function desenharGraficos() {
-        // 1. Gráfico de Evolução Mensal (sempre mostra todos os dados)
+        // 1. Gráfico de Evolução Mensal
         const mesesMap = new Map();
         transacoes.forEach(t => {
             if(t.data && t.data.length >= 7) {
@@ -838,7 +864,7 @@
             vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } }
         });
         
-        // 2. Gráfico de Despesas por Categoria com filtro de mês - ZERADO se não houver dados
+        // 2. Gráfico de Despesas por Categoria com filtro
         const mesSelecionado = document.getElementById("filtroMesCategoria").value;
         const despMap = new Map();
         transacoes.filter(t => {
@@ -869,7 +895,7 @@
             pieSliceTextStyle: { color: '#ffffff' }
         });
         
-        // 3. Gráfico de Subcategorias com filtro de mês - ZERADO se não houver dados
+        // 3. Gráfico de Subcategorias com filtro
         const mesSelecionadoSub = document.getElementById("filtroMesSubcategoria").value;
         const subMap = new Map();
         transacoes.filter(t => {
@@ -988,13 +1014,6 @@
         }
     };
     
-    window.excluirCategoria = function(cat) {
-        if(excluirCategoria(cat)) {
-            abrirModalCategorias();
-            atualizarTudo();
-        }
-    };
-    
     window.gerenciarSubcategorias = function(categoria) {
         const subLista = subcategorias.has(categoria) ? Array.from(subcategorias.get(categoria)) : [];
         let acao = prompt(`Subcategorias de "${categoria}":\n${subLista.join(", ") || "nenhuma"}\n\nDigite:\n1 - Adicionar\n2 - Editar\n3 - Excluir`, "1");
@@ -1029,16 +1048,30 @@
     
     function fecharModalCategorias() { document.getElementById("modalCategorias").style.display = "none"; }
     
-    // ====================== EVENTOS ======================
-    document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
-    document.getElementById("btnExemplo").addEventListener("click", () => {
+    // ====================== FUNÇÃO PARA EXEMPLOS ======================
+    function carregarExemplos() {
         const hoje = new Date().toISOString().slice(0,10);
         transacoes.push({ id: Date.now(), data: hoje, tipo: "despesa", categoria: "Lazer", subcategoria: "Restaurante", observacao: "Jantar", valor: 120 });
         transacoes.push({ id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Freelance", subcategoria: "Design", observacao: "Projeto", valor: 500 });
         salvarDados();
         atualizarTudo();
-    });
-    document.getElementById("btnLimparTudo").addEventListener("click", () => { if(confirm("Apagar tudo?")){ transacoes = []; salvarDados(); atualizarTudo(); } });
+        alert("Exemplos adicionados com sucesso!");
+    }
+    
+    // ====================== FUNÇÃO PARA LIMPAR TUDO ======================
+    function limparTudo() {
+        if(confirm("⚠️ ATENÇÃO! Isso apagará TODAS as transações. Deseja continuar?")) {
+            transacoes = [];
+            salvarDados();
+            atualizarTudo();
+            alert("Todos os dados foram removidos!");
+        }
+    }
+    
+    // ====================== EVENTOS ======================
+    document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
+    document.getElementById("btnExemplo").addEventListener("click", carregarExemplos);
+    document.getElementById("btnLimparTudo").addEventListener("click", limparTudo);
     document.getElementById("categoriaSelect").addEventListener("change", () => atualizarSelectSubcategorias());
     document.getElementById("btnCategorias").addEventListener("click", abrirModalCategorias);
     document.getElementById("btnBackup").addEventListener("click", fazerBackup);
@@ -1080,5 +1113,4 @@
 </script>
 </body>
 </html>
-
 

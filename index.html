@@ -306,6 +306,7 @@
             gap: 8px;
         }
 
+        /* Modais - COM SCROLL CORRIGIDO */
         .modal {
             display: none;
             position: fixed;
@@ -317,23 +318,36 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            overflow-y: auto;
         }
         .modal-content {
             background: #111827;
             border-radius: 24px;
             padding: 28px;
             max-width: 600px;
-            width: 90%;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             border: 1px solid #334155;
+            position: relative;
+            margin: auto;
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: #111827;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+            z-index: 10;
         }
         .modal-header h3 {
             color: #ffffff;
+            margin: 0;
         }
         .close-modal {
             background: none;
@@ -341,6 +355,10 @@
             color: #94a3b8;
             font-size: 1.5rem;
             cursor: pointer;
+            transition: 0.2s;
+        }
+        .close-modal:hover {
+            color: #ef4444;
         }
         .list-item {
             display: flex;
@@ -349,6 +367,8 @@
             padding: 10px;
             border-bottom: 1px solid #1e293b;
             color: #ffffff;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .list-item-actions button {
             margin-left: 8px;
@@ -358,6 +378,31 @@
             color: #60a5fa;
             font-size: 1rem;
         }
+        .list-item-actions button:hover {
+            color: #93c5fd;
+        }
+        
+        #listaCategoriasAdmin {
+            max-height: calc(90vh - 180px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        #listaCategoriasAdmin::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        #listaCategoriasAdmin::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 10px;
+        }
+        #listaCategoriasAdmin::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+
         .tipo-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -399,6 +444,9 @@
             .graficos-row { grid-template-columns: 1fr; }
             .bottom-actions { gap: 10px; }
             .bottom-actions .icon-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .modal-content { padding: 20px; }
+            .list-item { flex-direction: column; align-items: flex-start; }
+            .list-item-actions { align-self: flex-end; }
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -756,12 +804,12 @@
             } else if(t.tipo === "investimento") {
                 if(t.subTipo === "aplicar") {
                     totalInvestido += t.valor;
-                    totalDespesas += t.valor; // CORREÇÃO: Aplicar subtrai do saldo total
+                    totalDespesas += t.valor;
                 } else if(t.subTipo === "resgatar") {
                     totalInvestido -= t.valor;
-                    totalReceitas += t.valor; // Resgate entra como receita
+                    totalReceitas += t.valor;
                 } else if(t.subTipo === "juros") {
-                    totalInvestido += t.valor; // Juros aumenta o investido, mas não afeta saldo
+                    totalInvestido += t.valor;
                 }
             }
         });
@@ -911,7 +959,6 @@
     google.charts.load('current', { packages: ['corechart'] });
     
     function desenharGraficos() {
-        // Evolução Mensal com INVESTIMENTO ACUMULADO (cor azul)
         const mesesMap = new Map();
         const investimentoAcumulado = new Map();
         let acumulado = 0;
@@ -942,11 +989,10 @@
                 } else if(t.tipo === "despesa") {
                     m.despesa += t.valor;
                 } else if(t.tipo === "investimento" && t.subTipo === "aplicar") {
-                    m.despesa += t.valor; // CORREÇÃO: Aplicar entra como despesa no gráfico
+                    m.despesa += t.valor;
                 } else if(t.tipo === "investimento" && t.subTipo === "resgatar") {
-                    m.receita += t.valor; // Resgate entra como receita
+                    m.receita += t.valor;
                 }
-                // Juros não entra no gráfico de receita/despesa
             }
         });
         
@@ -972,7 +1018,6 @@
             vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } }
         });
         
-        // Despesas por Categoria
         const mesSelecionado = document.getElementById("filtroMesCategoria").value;
         const despMap = new Map();
         transacoes.filter(t => {
@@ -1003,7 +1048,6 @@
             pieSliceTextStyle: { color: '#ffffff' }
         });
         
-        // Subcategorias
         const mesSelecionadoSub = document.getElementById("filtroMesSubcategoria").value;
         const subMap = new Map();
         transacoes.filter(t => {
@@ -1285,7 +1329,6 @@
         }
     }
     
-    // Eventos
     document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
     document.getElementById("btnExemplo").addEventListener("click", carregarExemplos);
     document.getElementById("btnLimparTudo").addEventListener("click", limparTudo);

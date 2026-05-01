@@ -52,16 +52,6 @@
             font-weight: 400;
         }
 
-        h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 4px;
-        }
-
         .saldo-card {
             background: #1e293b;
             padding: 12px 28px;
@@ -384,7 +374,6 @@
 <div class="container">
     <div class="header">
         <div class="header-left">
-            
             <div class="saudacao" id="saudacaoMensagem">Carregando...</div>
         </div>
         <div class="saldo-card"><span>SALDO TOTAL</span> <span id="saldoTotal">R$ 0,00</span></div>
@@ -465,19 +454,32 @@
         </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Gráficos - Nova ordem: Evolução Mensal, Despesas por Categoria, Subcategorias -->
     <div class="graficos-row">
-        <div class="grafico-card">
-            <h3><i class="fas fa-chart-pie"></i> Despesas por Categoria</h3>
-            <div id="graficoPizza" style="width:100%; height: 300px;"></div>
-        </div>
+        <!-- 1. Evolução Mensal -->
         <div class="grafico-card">
             <h3><i class="fas fa-chart-line"></i> Evolução Mensal</h3>
             <div id="graficoEvolucao" style="width:100%; height: 300px;"></div>
         </div>
+        
+        <!-- 2. Despesas por Categoria com filtro de mês -->
+        <div class="grafico-card">
+            <h3><i class="fas fa-chart-pie"></i> Despesas por Categoria</h3>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Selecione o mês:</label>
+                <input type="month" id="filtroMesCategoria" style="width: 100%;">
+            </div>
+            <div id="graficoPizza" style="width:100%; height: 280px;"></div>
+        </div>
+        
+        <!-- 3. Subcategorias com filtro de mês -->
         <div class="grafico-card">
             <h3><i class="fas fa-layer-group"></i> Subcategorias (Despesas)</h3>
-            <div id="graficoSubcategorias" style="width:100%; height: 300px;"></div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Selecione o mês:</label>
+                <input type="month" id="filtroMesSubcategoria" style="width: 100%;">
+            </div>
+            <div id="graficoSubcategorias" style="width:100%; height: 280px;"></div>
         </div>
     </div>
 
@@ -792,27 +794,19 @@
         setTimeout(() => { btn.innerHTML = originalText; }, 1500);
     }
 
-    // ====================== GRÁFICOS ======================
+    // ====================== FUNÇÃO PARA INICIALIZAR FILTROS COM MÊS ATUAL ======================
+    function inicializarFiltrosMes() {
+        const hoje = new Date();
+        const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+        document.getElementById("filtroMesCategoria").value = anoMes;
+        document.getElementById("filtroMesSubcategoria").value = anoMes;
+    }
+
+    // ====================== GRÁFICOS COM FILTROS E CORES CORRIGIDAS ======================
     google.charts.load('current', { packages: ['corechart'] });
     
     function desenharGraficos() {
-        if(transacoes.length === 0) return;
-        
-        const despMap = new Map();
-        transacoes.filter(t => t.tipo === "despesa").forEach(t => {
-            despMap.set(t.categoria, (despMap.get(t.categoria) || 0) + t.valor);
-        });
-        let pieData = [["Categoria", "Valor"]];
-        if(despMap.size === 0) pieData.push(["Sem despesas", 1]);
-        else for(let [cat, val] of despMap.entries()) pieData.push([cat, val]);
-        const pieTable = google.visualization.arrayToDataTable(pieData);
-        const pieChart = new google.visualization.PieChart(document.getElementById('graficoPizza'));
-        pieChart.draw(pieTable, { 
-            title: '', pieHole: 0.4, backgroundColor: 'transparent', 
-            legend: { textStyle: { color: '#cbd5e1' } },
-            pieSliceTextStyle: { color: '#ffffff' }
-        });
-        
+        // 1. Gráfico de Evolução Mensal (sempre mostra todos os dados)
         const mesesMap = new Map();
         transacoes.forEach(t => {
             if(t.data && t.data.length >= 7) {
@@ -825,31 +819,88 @@
         });
         let mesesOrdenados = Array.from(mesesMap.keys()).sort().slice(-6);
         let barData = [["Mês", "Receitas", "Despesas"]];
-        mesesOrdenados.forEach(m => { const vals = mesesMap.get(m); barData.push([m, vals.receita, vals.despesa]); });
-        if(barData.length === 1) barData.push(["Sem dados", 0, 0]);
+        if(mesesOrdenados.length === 0) {
+            barData.push(["Sem dados", 0, 0]);
+        } else {
+            mesesOrdenados.forEach(m => { 
+                const vals = mesesMap.get(m); 
+                barData.push([m, vals.receita, vals.despesa]); 
+            });
+        }
         const barTable = google.visualization.arrayToDataTable(barData);
         const barChart = new google.visualization.ColumnChart(document.getElementById('graficoEvolucao'));
         barChart.draw(barTable, { 
-            backgroundColor: 'transparent', legend: { textStyle: { color: '#cbd5e1' } },
-            colors: ['#34d399', '#f87171'], hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' } },
-            vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' } }
+            backgroundColor: 'transparent', 
+            legend: { textStyle: { color: '#cbd5e1' } },
+            titleTextStyle: { color: '#ffffff' },
+            colors: ['#34d399', '#f87171'], 
+            hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
+            vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } }
         });
         
+        // 2. Gráfico de Despesas por Categoria com filtro de mês - ZERADO se não houver dados
+        const mesSelecionado = document.getElementById("filtroMesCategoria").value;
+        const despMap = new Map();
+        transacoes.filter(t => {
+            if(t.tipo !== "despesa") return false;
+            if(mesSelecionado) {
+                const mesTransacao = t.data ? t.data.slice(0,7) : null;
+                return mesTransacao === mesSelecionado;
+            }
+            return true;
+        }).forEach(t => {
+            despMap.set(t.categoria, (despMap.get(t.categoria) || 0) + t.valor);
+        });
+        
+        let pieData = [["Categoria", "Valor"]];
+        if(despMap.size === 0) {
+            pieData.push(["Nenhuma despesa neste mês", 1]);
+        } else {
+            for(let [cat, val] of despMap.entries()) pieData.push([cat, val]);
+        }
+        const pieTable = google.visualization.arrayToDataTable(pieData);
+        const pieChart = new google.visualization.PieChart(document.getElementById('graficoPizza'));
+        pieChart.draw(pieTable, { 
+            title: mesSelecionado ? `Despesas - ${mesSelecionado}` : 'Despesas por Categoria', 
+            pieHole: 0.4, 
+            backgroundColor: 'transparent', 
+            legend: { textStyle: { color: '#cbd5e1' } },
+            titleTextStyle: { color: '#ffffff' },
+            pieSliceTextStyle: { color: '#ffffff' }
+        });
+        
+        // 3. Gráfico de Subcategorias com filtro de mês - ZERADO se não houver dados
+        const mesSelecionadoSub = document.getElementById("filtroMesSubcategoria").value;
         const subMap = new Map();
-        transacoes.filter(t => t.tipo === "despesa" && t.subcategoria).forEach(t => {
+        transacoes.filter(t => {
+            if(t.tipo !== "despesa" || !t.subcategoria) return false;
+            if(mesSelecionadoSub) {
+                const mesTransacao = t.data ? t.data.slice(0,7) : null;
+                return mesTransacao === mesSelecionadoSub;
+            }
+            return true;
+        }).forEach(t => {
             const key = `${t.categoria}/${t.subcategoria}`;
             subMap.set(key, (subMap.get(key) || 0) + t.valor);
         });
+        
         let subData = [["Subcategoria", "Total"]];
-        const sortedSub = Array.from(subMap.entries()).sort((a,b) => b[1]-a[1]).slice(0,6);
-        if(sortedSub.length === 0) subData.push(["Sem dados", 1]);
-        else sortedSub.forEach(([k, v]) => subData.push([k, v]));
+        if(subMap.size === 0) {
+            subData.push(["Nenhuma despesa neste mês", 1]);
+        } else {
+            const sortedSub = Array.from(subMap.entries()).sort((a,b) => b[1]-a[1]).slice(0,6);
+            sortedSub.forEach(([k, v]) => subData.push([k, v]));
+        }
         const subTable = google.visualization.arrayToDataTable(subData);
         const subChart = new google.visualization.BarChart(document.getElementById('graficoSubcategorias'));
         subChart.draw(subTable, { 
-            backgroundColor: 'transparent', legend: { position: 'none' },
-            hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' } },
-            vAxis: { textStyle: { color: '#cbd5e1' } }, colors: ['#60a5fa']
+            title: mesSelecionadoSub ? `Subcategorias - ${mesSelecionadoSub}` : 'Subcategorias (Despesas)',
+            backgroundColor: 'transparent', 
+            legend: { position: 'none' },
+            titleTextStyle: { color: '#ffffff' },
+            hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
+            vAxis: { textStyle: { color: '#cbd5e1' }, titleTextStyle: { color: '#ffffff' } }, 
+            colors: ['#60a5fa']
         });
     }
     
@@ -1011,17 +1062,23 @@
         }
     });
     
+    // Eventos dos filtros de mês
+    document.getElementById("filtroMesCategoria").addEventListener("change", () => desenharGraficos());
+    document.getElementById("filtroMesSubcategoria").addEventListener("change", () => desenharGraficos());
+    
     // Data padrão = hoje
     document.getElementById("dataLancamento").valueAsDate = new Date();
     
-    // Inicializar saudação e dados
+    // Inicializar saudação, filtros e dados
     atualizarSaudacao();
+    inicializarFiltrosMes();
     carregarDados();
     atualizarTudo();
     
-    // Atualizar saudação a cada minuto (opcional)
+    // Atualizar saudação a cada minuto
     setInterval(atualizarSaudacao, 60000);
 </script>
 </body>
 </html>
+
 

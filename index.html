@@ -8,99 +8,542 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* TODO O CSS ANTERIOR permanece IGUAL - vou repetir apenas o que muda */
-        
-        /* Mantenha todo o CSS que já estava funcionando */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0e17; font-family: 'Inter', sans-serif; padding: 20px 16px 40px; color: #ffffff; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 28px; background: #111827; padding: 20px 28px; border-radius: 28px; border: 1px solid #1f2937; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        .header-left { flex: 1; }
-        .saudacao { font-size: 1rem; color: #94a3b8; margin-top: 5px; font-weight: 400; }
-        .saldo-card { background: #1e293b; padding: 12px 28px; border-radius: 50px; font-weight: 700; font-size: 1.4rem; border: 1px solid #334155; color: #fbbf24; }
-        .saldo-card span:first-child { font-size: 0.85rem; font-weight: 400; margin-right: 12px; color: #cbd5e1; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .card { background: #111827; border-radius: 24px; padding: 22px 24px; border: 1px solid #1f2937; transition: transform 0.2s, border-color 0.2s; }
-        .card:hover { border-color: #3b82f6; transform: translateY(-2px); }
-        .card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; border-left: 4px solid #3b82f6; padding-left: 14px; display: flex; align-items: center; gap: 10px; color: #ffffff; }
-        .form-group { margin-bottom: 18px; width: 100%; }
-        label { display: block; font-weight: 500; font-size: 0.85rem; margin-bottom: 6px; color: #cbd5e1; }
-        input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 16px; border: 1.5px solid #1e293b; background: #0f172a; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.2s; box-sizing: border-box; }
-        textarea { resize: vertical; min-height: 60px; }
-        input::placeholder, textarea::placeholder { color: #64748b; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
-        
-        /* CORREÇÕES PARA IPHONE */
-        input[type="date"], input[type="month"] { -webkit-appearance: none; appearance: none; min-height: 48px; width: 100%; box-sizing: border-box; }
-        @supports (-webkit-touch-callout: none) {
-            input[type="date"], input[type="month"] { display: block; min-height: 48px; padding: 12px 14px; font-size: 16px; line-height: normal; }
-            .form-group { display: block; width: 100%; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        input[type="date"]::-webkit-datetime-edit-fields-wrapper, input[type="month"]::-webkit-datetime-edit-fields-wrapper { padding: 0; display: flex; width: 100%; }
-        input[type="date"]::-webkit-datetime-edit-text, input[type="month"]::-webkit-datetime-edit-text { padding: 0 2px; color: #94a3b8; }
-        input[type="date"]::-webkit-datetime-edit-month-field, input[type="date"]::-webkit-datetime-edit-day-field, input[type="date"]::-webkit-datetime-edit-year-field,
-        input[type="month"]::-webkit-datetime-edit-month-field, input[type="month"]::-webkit-datetime-edit-year-field { padding: 0; color: #ffffff; }
-        
-        .input-group { display: flex; gap: 8px; align-items: center; }
-        .input-group input, .input-group select { flex: 1; }
-        .icon-btn { background: #1e293b; border: 1.5px solid #334155; color: #60a5fa; padding: 10px 16px; border-radius: 16px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-        .icon-btn:hover { background: #334155; color: #93c5fd; }
-        .btn { background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-danger { background: #dc2626; }
-        .btn-outline { background: transparent; border: 1.5px solid #3b82f6; color: #60a5fa; }
-        .btn-sm { padding: 6px 12px; font-size: 0.75rem; width: auto; }
-        .lista-transacoes { max-height: 400px; overflow-y: auto; }
-        .transacao-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e293b; }
-        .transacao-info { flex: 1; }
-        .transacao-tipo { font-weight: 600; margin-bottom: 4px; color: #ffffff; }
-        .transacao-data { font-size: 0.65rem; color: #94a3b8; margin-top: 3px; }
-        .transacao-obs { font-size: 0.65rem; color: #94a3b8; font-style: italic; }
-        .transacao-valor { font-weight: 700; font-size: 0.95rem; margin-right: 12px; }
-        .receita-valor { color: #3b82f6; }
-        .despesa-valor { color: #f87171; }
-        .investimento-aplicar-valor { color: #a78bfa; }
-        .investimento-resgatar-valor { color: #34d399; }
-        .investimento-juros-valor { color: #a78bfa; }
-        .acoes i { cursor: pointer; opacity: 0.6; transition: 0.2s; margin-left: 8px; color: #cbd5e1; }
-        .acoes i:hover { opacity: 1; color: #ef4444; }
-        .graficos-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-top: 10px; }
-        .grafico-card { background: #111827; border-radius: 24px; padding: 20px; border: 1px solid #1f2937; }
-        .grafico-card h3 { color: #ffffff; }
-        .grafico-card .form-group { margin-bottom: 15px; width: 100%; }
-        .grafico-card .form-group label { display: block; margin-bottom: 6px; color: #cbd5e1; }
-        .filtro-periodo { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .filtro-periodo button { flex: 1; background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 8px 12px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
-        .filtro-periodo button.ativo { background: #3b82f6; color: white; border-color: #3b82f6; }
-        .filtro-periodo button:hover:not(.ativo) { background: #334155; color: #cbd5e1; }
-        .bottom-actions { margin-top: 32px; padding: 20px 0; border-top: 1px solid #1e293b; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
-        .bottom-actions .icon-btn { padding: 12px 24px; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; }
-        
+
+        body {
+            background: #0a0e17;
+            font-family: 'Inter', sans-serif;
+            padding: 20px 16px 40px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            background: #111827;
+            padding: 20px 28px;
+            border-radius: 28px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .saudacao {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-top: 5px;
+            font-weight: 400;
+        }
+
+        .saldo-card {
+            background: #1e293b;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            border: 1px solid #334155;
+            color: #fbbf24;
+        }
+        .saldo-card span:first-child {
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-right: 12px;
+            color: #cbd5e1;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 24px;
+            padding: 22px 24px;
+            border: 1px solid #1f2937;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1.5px solid #1e293b;
+            background: #0f172a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #64748b;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+
+        /* CORREÇÕES PARA IPHONE */
+        input[type="date"], input[type="month"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 48px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            input[type="date"], input[type="month"] {
+                display: block;
+                min-height: 48px;
+                padding: 12px 14px;
+                font-size: 16px;
+                line-height: normal;
+            }
+            .form-group {
+                display: block;
+                width: 100%;
+            }
+        }
+
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+        input[type="month"]::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+            display: flex;
+            width: 100%;
+        }
+
+        input[type="date"]::-webkit-datetime-edit-text,
+        input[type="month"]::-webkit-datetime-edit-text {
+            padding: 0 2px;
+            color: #94a3b8;
+        }
+
+        input[type="date"]::-webkit-datetime-edit-month-field,
+        input[type="date"]::-webkit-datetime-edit-day-field,
+        input[type="date"]::-webkit-datetime-edit-year-field,
+        input[type="month"]::-webkit-datetime-edit-month-field,
+        input[type="month"]::-webkit-datetime-edit-year-field {
+            padding: 0;
+            color: #ffffff;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+        }
+        .icon-btn {
+            background: #1e293b;
+            border: 1.5px solid #334155;
+            color: #60a5fa;
+            padding: 10px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .icon-btn:hover {
+            background: #334155;
+            color: #93c5fd;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-danger {
+            background: #dc2626;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #3b82f6;
+            color: #60a5fa;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            width: auto;
+        }
+
+        .lista-transacoes {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .transacao-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #1e293b;
+        }
+        .transacao-info {
+            flex: 1;
+        }
+        .transacao-tipo {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #ffffff;
+        }
+        .transacao-data {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        .transacao-obs {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        .transacao-valor {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-right: 12px;
+        }
+        .receita-valor {
+            color: #3b82f6;
+        }
+        .despesa-valor {
+            color: #f87171;
+        }
+        .investimento-aplicar-valor {
+            color: #a78bfa;
+        }
+        .investimento-resgatar-valor {
+            color: #34d399;
+        }
+        .investimento-juros-valor {
+            color: #a78bfa;
+        }
+        .acoes i {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+            margin-left: 8px;
+            color: #cbd5e1;
+        }
+        .acoes i:hover {
+            opacity: 1;
+            color: #ef4444;
+        }
+
+        .graficos-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-top: 10px;
+        }
+
+        .grafico-card {
+            background: #111827;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #1f2937;
+        }
+        .grafico-card h3 {
+            color: #ffffff;
+        }
+        .grafico-card .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .grafico-card .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        .filtro-periodo {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .filtro-periodo button {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+        .filtro-periodo button.ativo {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .filtro-periodo button:hover:not(.ativo) {
+            background: #334155;
+            color: #cbd5e1;
+        }
+
+        .bottom-actions {
+            margin-top: 32px;
+            padding: 20px 0;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .bottom-actions .icon-btn {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 680px) {
+            .bottom-actions .icon-btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+        }
+
         /* MODAL CONFIGURAÇÕES */
-        .config-field { margin-bottom: 20px; }
-        .config-field label { margin-bottom: 8px; font-weight: 600; }
-        .config-field input { width: 100%; }
+        .config-field {
+            margin-bottom: 20px;
+        }
+        .config-field label {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .config-field input {
+            width: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: #111827;
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            position: relative;
+            margin: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: #111827;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+            z-index: 10;
+        }
+        .modal-header h3 {
+            color: #ffffff;
+            margin: 0;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .close-modal:hover {
+            color: #ef4444;
+        }
+
+        /* Modal Categorias */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #1e293b;
+            color: #ffffff;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .list-item-actions button {
+            margin-left: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #60a5fa;
+            font-size: 1rem;
+        }
+        .list-item-actions button:hover {
+            color: #93c5fd;
+        }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
-        .modal-content { background: #111827; border-radius: 24px; padding: 28px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #334155; position: relative; margin: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: sticky; top: 0; background: #111827; padding-bottom: 10px; border-bottom: 1px solid #1e293b; z-index: 10; }
-        .modal-header h3 { color: #ffffff; margin: 0; }
-        .close-modal { background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .close-modal:hover { color: #ef4444; }
+        #listaCategoriasAdmin {
+            max-height: calc(90vh - 180px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
         
-        .despesa-diaria-valor { color: #fbbf24; font-size: 1.4rem; font-weight: 700; }
-        footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #94a3b8; }
-        
+        #listaCategoriasAdmin::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        #listaCategoriasAdmin::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 10px;
+        }
+        #listaCategoriasAdmin::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+
+        .tipo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            margin-left: 8px;
+        }
+        .tipo-receita {
+            background: #3b82f620;
+            color: #60a5fa;
+            border: 1px solid #60a5fa;
+        }
+        .tipo-despesa {
+            background: #ef444420;
+            color: #f87171;
+            border: 1px solid #f87171;
+        }
+        .tipo-investimento {
+            background: #a78bfa20;
+            color: #a78bfa;
+            border: 1px solid #a78bfa;
+        }
+
+        .despesa-diaria-valor {
+            color: #fbbf24;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
         @media (max-width: 680px) {
             .header { flex-direction: column; gap: 12px; text-align: center; }
             .graficos-row { grid-template-columns: 1fr; }
             .bottom-actions { gap: 10px; }
-            .bottom-actions .icon-btn { padding: 8px 16px; font-size: 0.85rem; }
             .modal-content { padding: 20px; }
+            .list-item { flex-direction: column; align-items: flex-start; }
+            .list-item-actions { align-self: flex-end; }
+            .filtro-periodo button { font-size: 0.7rem; padding: 6px 8px; }
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        select option { background: #0f172a; color: #ffffff; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        
+        select option {
+            background: #0f172a;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -113,7 +556,6 @@
     </div>
 
     <div class="dashboard">
-        <!-- Formulário principal -->
         <div class="card">
             <h3><i class="fas fa-plus-circle"></i> Novo Lançamento</h3>
             <div class="form-group"><label><i class="far fa-calendar"></i> Data</label><input type="date" id="dataLancamento"></div>
@@ -194,14 +636,15 @@
         </div>
     </div>
 
-<div class="bottom-actions">
-    <button id="btnExemplo" class="icon-btn"><i class="fas fa-chart-line"></i> Exemplos</button>
-    <button id="btnLimparTudo" class="icon-btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
-    <button id="btnCategorias" class="icon-btn"><i class="fas fa-tags"></i> Gerenciar Categorias/Sub</button>
-    <button id="btnConfig" class="icon-btn"><i class="fas fa-cog"></i> Configurações</button>
-    <button id="btnBackup" class="icon-btn"><i class="fas fa-download"></i> Backup</button>
-    <button id="btnRestore" class="icon-btn"><i class="fas fa-upload"></i> Restaurar Backup</button>
-</div>
+    <!-- BOTÕES NA ORDEM CORRETA: Exemplos > Limpar Tudo > Gerenciar Categorias/Sub > Configurações > Backup > Restaurar Backup -->
+    <div class="bottom-actions">
+        <button id="btnExemplo" class="icon-btn"><i class="fas fa-chart-line"></i> Exemplos</button>
+        <button id="btnLimparTudo" class="icon-btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
+        <button id="btnCategorias" class="icon-btn"><i class="fas fa-tags"></i> Gerenciar Categorias/Sub</button>
+        <button id="btnConfig" class="icon-btn"><i class="fas fa-cog"></i> Configurações</button>
+        <button id="btnBackup" class="icon-btn"><i class="fas fa-download"></i> Backup</button>
+        <button id="btnRestore" class="icon-btn"><i class="fas fa-upload"></i> Restaurar Backup</button>
+    </div>
 
     <footer><i class="fas fa-crown"></i> Desenvolvido por Djão Alexander • Since 05/2026 • Versão 0.00</footer>
 </div>
@@ -222,9 +665,23 @@
     </div>
 </div>
 
+<!-- MODAL CATEGORIAS -->
+<div id="modalCategorias" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-tags"></i> Gerenciar Categorias e Subcategorias</h3>
+            <button class="close-modal" onclick="fecharModalCategorias()">&times;</button>
+        </div>
+        <div id="listaCategoriasAdmin"></div>
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #1e293b;">
+            <p style="font-size: 0.75rem; color: #94a3b8;"><i class="fas fa-info-circle"></i> Categorias são filtradas por tipo ao selecionar Receita/Despesa/Investimento</p>
+        </div>
+    </div>
+</div>
+
 <script>
     // ====================== SAUDAÇÃO DINÂMICA ======================
-    let nomeUsuario = ""; // Variável global para armazenar o nome
+    let nomeUsuario = "";
     
     function atualizarSaudacao() {
         const agora = new Date();
@@ -239,17 +696,14 @@
             saudacao = "🌙 Olá, Boa Noite";
         }
         
-        // Adiciona o nome se existir
         if (nomeUsuario && nomeUsuario.trim() !== "") {
             saudacao += ` ${nomeUsuario.trim()}`;
         }
         
         saudacao += "!!!";
-        
         document.getElementById("saudacaoMensagem").innerHTML = saudacao;
     }
     
-    // Carregar nome salvo no localStorage
     function carregarNomeUsuario() {
         const saved = localStorage.getItem("fincontrol_nome_usuario");
         if (saved) {
@@ -268,7 +722,6 @@
         alert("✅ Configuração salva com sucesso!");
     }
     
-    // Modal Configurações
     function abrirModalConfig() {
         document.getElementById("configNome").value = nomeUsuario;
         document.getElementById("modalConfig").style.display = "flex";
@@ -278,7 +731,7 @@
         document.getElementById("modalConfig").style.display = "none";
     }
     
-    // ====================== RESTO DO SISTEMA (mantido igual) ======================
+    // ====================== DADOS GLOBAIS ======================
     let transacoes = [];
     let periodoEvolucao = "mensal";
     let categoriasList = [
@@ -560,7 +1013,7 @@
     
     document.getElementById("dataLancamento").valueAsDate = new Date();
     
-    carregarNomeUsuario(); // Carrega nome salvo
+    carregarNomeUsuario();
     inicializarFiltrosMes();
     carregarDados();
     atualizarTudo();

@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* TODO O SEU CSS ANTERIOR AQUI (MANTENHA IGUAL) */
         * {
             margin: 0;
             padding: 0;
@@ -124,39 +123,6 @@
             box-sizing: border-box;
         }
 
-        /* CORREÇÃO EXCLUSIVA PARA IPHONE */
-        @supports (-webkit-touch-callout: none) {
-            input, select, textarea {
-                font-size: 16px;
-            }
-            input[type="date"] {
-                min-height: 48px;
-            }
-        }
-
-input, select, textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 16px;
-    border: 1.5px solid #1e293b;
-    background: #0f172a;
-    color: #ffffff;
-}
-
-/* CORREÇÃO IPHONE */
-input[type="date"] {
-    -webkit-appearance: none;
-    appearance: none;
-    min-height: 48px;
-}
-
-@supports (-webkit-touch-callout: none) {
-    input[type="date"] {
-        min-height: 48px;
-        padding: 12px 14px;
-    }
-}
-
         textarea {
             resize: vertical;
             min-height: 60px;
@@ -171,6 +137,78 @@ input[type="date"] {
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
         }
+
+        /* ==================== CORREÇÕES PARA IPHONE ==================== */
+        /* Campo de data */
+        input[type="date"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 48px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Campos de mês (filtros dos gráficos) */
+        input[type="month"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 48px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Ajustes específicos para iOS */
+        @supports (-webkit-touch-callout: none) {
+            input[type="date"], input[type="month"] {
+                display: block;
+                min-height: 48px;
+                padding: 12px 14px;
+                font-size: 16px;
+                line-height: normal;
+            }
+            .form-group {
+                display: block;
+                width: 100%;
+            }
+        }
+
+        /* Estilização interna do seletor de data no iPhone */
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+            display: flex;
+            width: 100%;
+        }
+
+        input[type="date"]::-webkit-datetime-edit-text {
+            padding: 0 2px;
+            color: #94a3b8;
+        }
+
+        input[type="date"]::-webkit-datetime-edit-month-field,
+        input[type="date"]::-webkit-datetime-edit-day-field,
+        input[type="date"]::-webkit-datetime-edit-year-field {
+            padding: 0;
+            color: #ffffff;
+        }
+
+        /* Estilização interna do seletor de mês no iPhone */
+        input[type="month"]::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+            display: flex;
+            width: 100%;
+        }
+
+        input[type="month"]::-webkit-datetime-edit-text {
+            padding: 0 2px;
+            color: #94a3b8;
+        }
+
+        input[type="month"]::-webkit-datetime-edit-month-field,
+        input[type="month"]::-webkit-datetime-edit-year-field {
+            padding: 0;
+            color: #ffffff;
+        }
+        /* ==================== FIM DAS CORREÇÕES PARA IPHONE ==================== */
 
         .input-group {
             display: flex;

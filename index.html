@@ -134,18 +134,28 @@
             }
         }
 
-        input[type="date"] {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 16px;
-            border: 1.5px solid #1e293b;
-            background: #0f172a;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            box-sizing: border-box;
-        }
+input, select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1.5px solid #1e293b;
+    background: #0f172a;
+    color: #ffffff;
+}
+
+/* CORREÇÃO IPHONE */
+input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 48px;
+}
+
+@supports (-webkit-touch-callout: none) {
+    input[type="date"] {
+        min-height: 48px;
+        padding: 12px 14px;
+    }
+}
 
         textarea {
             resize: vertical;

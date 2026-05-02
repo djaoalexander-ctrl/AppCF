@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* TODO O SEU CSS ANTERIOR AQUI (MANTENHA IGUAL) */
         * {
             margin: 0;
             padding: 0;
@@ -99,6 +100,7 @@
 
         .form-group {
             margin-bottom: 18px;
+            width: 100%;
         }
 
         label {
@@ -119,9 +121,20 @@
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             transition: all 0.2s;
+            box-sizing: border-box;
         }
 
-        input[type="month"] {
+        /* CORREÇÃO EXCLUSIVA PARA IPHONE */
+        @supports (-webkit-touch-callout: none) {
+            input, select, textarea {
+                font-size: 16px;
+            }
+            input[type="date"] {
+                min-height: 48px;
+            }
+        }
+
+        input[type="date"] {
             width: 100%;
             padding: 12px 14px;
             border-radius: 16px;
@@ -237,13 +250,13 @@
             margin-right: 12px;
         }
         .receita-valor {
-            color: #34d399;
+            color: #3b82f6;
         }
         .despesa-valor {
             color: #f87171;
         }
         .investimento-aplicar-valor {
-            color: #3b82f6;
+            color: #a78bfa;
         }
         .investimento-resgatar-valor {
             color: #34d399;
@@ -289,6 +302,33 @@
             color: #cbd5e1;
         }
 
+        .filtro-periodo {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .filtro-periodo button {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+        .filtro-periodo button.ativo {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .filtro-periodo button:hover:not(.ativo) {
+            background: #334155;
+            color: #cbd5e1;
+        }
+
         .bottom-actions {
             margin-top: 32px;
             padding: 20px 0;
@@ -306,7 +346,6 @@
             gap: 8px;
         }
 
-        /* Modais - COM SCROLL CORRIGIDO */
         .modal {
             display: none;
             position: fixed;
@@ -411,9 +450,9 @@
             margin-left: 8px;
         }
         .tipo-receita {
-            background: #10b98120;
-            color: #34d399;
-            border: 1px solid #34d399;
+            background: #3b82f620;
+            color: #60a5fa;
+            border: 1px solid #60a5fa;
         }
         .tipo-despesa {
             background: #ef444420;
@@ -421,9 +460,9 @@
             border: 1px solid #f87171;
         }
         .tipo-investimento {
-            background: #3b82f620;
-            color: #60a5fa;
-            border: 1px solid #60a5fa;
+            background: #a78bfa20;
+            color: #a78bfa;
+            border: 1px solid #a78bfa;
         }
 
         .despesa-diaria-valor {
@@ -447,6 +486,7 @@
             .modal-content { padding: 20px; }
             .list-item { flex-direction: column; align-items: flex-start; }
             .list-item-actions { align-self: flex-end; }
+            .filtro-periodo button { font-size: 0.7rem; padding: 6px 8px; }
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -542,11 +582,11 @@
         <div class="card">
             <h3><i class="fas fa-chart-pie"></i> Resumo Financeiro</h3>
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding: 10px 0;">
-                <div><span style="font-weight:600; color:#cbd5e1;">📈 Receitas:</span> <span id="totalReceitas" style="color:#34d399; font-size:1.2rem;">R$0</span></div>
+                <div><span style="font-weight:600; color:#cbd5e1;">📈 Receitas:</span> <span id="totalReceitas" style="color:#3b82f6; font-size:1.2rem;">R$0</span></div>
                 <div><span style="font-weight:600; color:#cbd5e1;">📉 Despesas:</span> <span id="totalDespesas" style="color:#f87171; font-size:1.2rem;">R$0</span></div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <div><span style="font-weight:600; color:#cbd5e1;">💰 Total Investido:</span> <span id="totalInvestido" style="color:#60a5fa; font-size:1.2rem;">R$0</span></div>
+                <div><span style="font-weight:600; color:#cbd5e1;">💰 Total Investido:</span> <span id="totalInvestido" style="color:#a78bfa; font-size:1.2rem;">R$0</span></div>
             </div>
             <div style="border-top: 1px solid #1e293b; padding-top: 15px;">
                 <div style="color:#cbd5e1;"><i class="fas fa-calendar-day"></i> Despesa Diária</div>
@@ -558,6 +598,11 @@
     <div class="graficos-row">
         <div class="grafico-card">
             <h3><i class="fas fa-chart-line"></i> Evolução Mensal</h3>
+            <div class="filtro-periodo">
+                <button id="btnMensal" class="ativo">📅 Mensal</button>
+                <button id="btnTrimestral">📊 Trimestral</button>
+                <button id="btnSemestral">📈 Semestral</button>
+            </div>
             <div id="graficoEvolucao" style="width:100%; height: 300px;"></div>
         </div>
         
@@ -605,6 +650,7 @@
 </div>
 
 <script>
+    // SAUDAÇÃO DINÂMICA
     function atualizarSaudacao() {
         const agora = new Date();
         const hora = agora.getHours();
@@ -621,7 +667,9 @@
         document.getElementById("saudacaoMensagem").innerHTML = saudacao;
     }
     
+    // DADOS GLOBAIS
     let transacoes = [];
+    let periodoEvolucao = "mensal";
     let categoriasList = [
         { nome: "Alimentação", tipo: "despesa" },
         { nome: "Moradia", tipo: "despesa" },
@@ -637,8 +685,18 @@
     ];
     let subcategorias = new Map();
 
+    // FUNÇÕES AUXILIARES
+    function formatarDataParaExibicao(dataISO) {
+        if (!dataISO) return '';
+        const partes = dataISO.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+        return dataISO;
+    }
+
     function carregarDados() {
-        const saved = localStorage.getItem("fincontrol_pro_v5");
+        const saved = localStorage.getItem("fincontrol_pro_v6");
         if(saved) {
             const data = JSON.parse(saved);
             transacoes = data.transacoes || [];
@@ -652,11 +710,13 @@
         }
         if(transacoes.length === 0) {
             const hoje = new Date().toISOString().slice(0,10);
+            const mesPassado = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0,10);
+            const mesRetrasado = new Date(Date.now() - 60*24*60*60*1000).toISOString().slice(0,10);
             transacoes = [
                 { id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Salário", subcategoria: "CLT", observacao: "Salário mensal", valor: 5800 },
                 { id: Date.now()+2, data: hoje, tipo: "despesa", categoria: "Moradia", subcategoria: "Aluguel", observacao: "Aluguel apartamento", valor: 1500 },
-                { id: Date.now()+3, data: "2025-04-10", tipo: "despesa", categoria: "Alimentação", subcategoria: "Mercado", observacao: "Supermercado", valor: 580 },
-                { id: Date.now()+4, data: hoje, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 1000 }
+                { id: Date.now()+3, data: mesPassado, tipo: "despesa", categoria: "Alimentação", subcategoria: "Mercado", observacao: "Supermercado", valor: 580 },
+                { id: Date.now()+4, data: mesRetrasado, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 1000 }
             ];
         }
         atualizarSelectCategorias();
@@ -668,7 +728,7 @@
         for(let [cat, subs] of subcategorias.entries()) {
             subObj[cat] = Array.from(subs);
         }
-        localStorage.setItem("fincontrol_pro_v5", JSON.stringify({
+        localStorage.setItem("fincontrol_pro_v6", JSON.stringify({
             transacoes: transacoes,
             categoriasList: categoriasList,
             subcategorias: subObj
@@ -866,11 +926,11 @@
                     displayTipo = "Investimento - Juros";
                 }
             }
-            const dataFormatada = t.data ? t.data.split('-').reverse().join('/') : "Sem data";
+            const dataExibicao = formatarDataParaExibicao(t.data);
             html += `
                 <div class="transacao-item">
                     <div class="transacao-info">
-                        <div class="transacao-data"><i class="far fa-calendar-alt"></i> ${dataFormatada}</div>
+                        <div class="transacao-data"><i class="far fa-calendar-alt"></i> ${dataExibicao}</div>
                         <div class="transacao-tipo">${emoji} ${displayTipo} • ${t.categoria} ${t.subcategoria ? `• ${t.subcategoria}` : ''}</div>
                         ${t.observacao ? `<div class="transacao-obs"><i class="fas fa-comment"></i> ${escapeHtml(t.observacao)}</div>` : ''}
                     </div>
@@ -956,12 +1016,38 @@
         document.getElementById("filtroMesSubcategoria").value = anoMes;
     }
 
+    function getMesesPorPeriodo(periodo) {
+        const hoje = new Date();
+        const meses = [];
+        
+        if (periodo === "mensal") {
+            const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+            meses.push(mesAtual);
+        } else if (periodo === "trimestral") {
+            for (let i = 2; i >= 0; i--) {
+                const data = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                const mes = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                meses.push(mes);
+            }
+        } else if (periodo === "semestral") {
+            for (let i = 5; i >= 0; i--) {
+                const data = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                const mes = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                meses.push(mes);
+            }
+        }
+        
+        return meses;
+    }
+
     google.charts.load('current', { packages: ['corechart'] });
     
     function desenharGraficos() {
+        // EVOLUÇÃO MENSAL
         const mesesMap = new Map();
         const investimentoAcumulado = new Map();
         let acumulado = 0;
+        
         const todasDatas = [...transacoes].filter(t => t.data && t.data.length >= 7);
         todasDatas.sort((a,b) => (a.data || "").localeCompare(b.data || ""));
         
@@ -996,28 +1082,34 @@
             }
         });
         
-        let mesesOrdenados = Array.from(mesesMap.keys()).sort().slice(-6);
+        const mesesFiltrados = getMesesPorPeriodo(periodoEvolucao);
         let barData = [["Mês", "Receitas", "Despesas", "Saldo Investido"]];
-        if(mesesOrdenados.length === 0) {
+        
+        mesesFiltrados.forEach(mes => {
+            const vals = mesesMap.get(mes) || { receita: 0, despesa: 0 };
+            const invAcum = investimentoAcumulado.get(mes) || 0;
+            const [ano, mesNum] = mes.split('-');
+            const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const mesExibicao = `${mesesNomes[parseInt(mesNum)-1]}/${ano.slice(-2)}`;
+            barData.push([mesExibicao, vals.receita, vals.despesa, invAcum]);
+        });
+        
+        if(barData.length === 1) {
             barData.push(["Sem dados", 0, 0, 0]);
-        } else {
-            mesesOrdenados.forEach(m => { 
-                const vals = mesesMap.get(m);
-                const invAcum = investimentoAcumulado.get(m) || 0;
-                barData.push([m, vals.receita, vals.despesa, invAcum]); 
-            });
         }
+        
         const barTable = google.visualization.arrayToDataTable(barData);
         const barChart = new google.visualization.ColumnChart(document.getElementById('graficoEvolucao'));
         barChart.draw(barTable, { 
             backgroundColor: 'transparent', 
             legend: { textStyle: { color: '#cbd5e1' } },
             titleTextStyle: { color: '#ffffff' },
-            colors: ['#34d399', '#f87171', '#3b82f6'], 
+            colors: ['#3b82f6', '#f87171', '#a78bfa'], 
             hAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } },
             vAxis: { textStyle: { color: '#cbd5e1' }, gridlines: { color: '#334155' }, titleTextStyle: { color: '#ffffff' } }
         });
         
+        // DESPESAS POR CATEGORIA
         const mesSelecionado = document.getElementById("filtroMesCategoria").value;
         const despMap = new Map();
         transacoes.filter(t => {
@@ -1048,6 +1140,7 @@
             pieSliceTextStyle: { color: '#ffffff' }
         });
         
+        // SUBCATEGORIAS
         const mesSelecionadoSub = document.getElementById("filtroMesSubcategoria").value;
         const subMap = new Map();
         transacoes.filter(t => {
@@ -1106,6 +1199,24 @@
         renderizarLista();
         if(window.google && google.visualization) desenharGraficos();
         else google.charts.setOnLoadCallback(() => desenharGraficos());
+    }
+    
+    function setPeriodo(periodo) {
+        periodoEvolucao = periodo;
+        
+        document.getElementById("btnMensal").classList.remove("ativo");
+        document.getElementById("btnTrimestral").classList.remove("ativo");
+        document.getElementById("btnSemestral").classList.remove("ativo");
+        
+        if(periodo === "mensal") {
+            document.getElementById("btnMensal").classList.add("ativo");
+        } else if(periodo === "trimestral") {
+            document.getElementById("btnTrimestral").classList.add("ativo");
+        } else if(periodo === "semestral") {
+            document.getElementById("btnSemestral").classList.add("ativo");
+        }
+        
+        desenharGraficos();
     }
     
     function fazerBackup() {
@@ -1329,6 +1440,7 @@
         }
     }
     
+    // EVENTOS
     document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
     document.getElementById("btnExemplo").addEventListener("click", carregarExemplos);
     document.getElementById("btnLimparTudo").addEventListener("click", limparTudo);
@@ -1368,6 +1480,10 @@
             atualizarSelectSubcategorias();
         }
     });
+    
+    document.getElementById("btnMensal").addEventListener("click", () => setPeriodo("mensal"));
+    document.getElementById("btnTrimestral").addEventListener("click", () => setPeriodo("trimestral"));
+    document.getElementById("btnSemestral").addEventListener("click", () => setPeriodo("semestral"));
     
     document.getElementById("filtroMesCategoria").addEventListener("change", () => desenharGraficos());
     document.getElementById("filtroMesSubcategoria").addEventListener("change", () => desenharGraficos());

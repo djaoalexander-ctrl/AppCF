@@ -989,8 +989,41 @@
     window.excluirSubcategoria = function(categoria, subNome) { if(confirm(`Excluir subcategoria "${subNome}" da categoria "${categoria}"?`)) { if(subcategorias.has(categoria)) { subcategorias.get(categoria).delete(subNome); transacoes.forEach(t => { if(t.categoria === categoria && t.subcategoria === subNome) t.subcategoria = null; }); salvarDados(); atualizarSelectSubcategorias(); return true; } } return false; };
     function fecharModalCategorias() { document.getElementById("modalCategorias").style.display = "none"; }
     
-    function carregarExemplos() { const hoje = new Date().toISOString().slice(0,10); transacoes.push({ id: Date.now(), data: hoje, tipo: "despesa", categoria: "Lazer", subcategoria: "Restaurante", observacao: "Jantar", valor: 120 }); transacoes.push({ id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Freelance", subcategoria: "Design", observacao: "Projeto", valor: 500 }); transacoes.push({ id: Date.now()+2, data: hoje, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 300 }); transacoes.push({ id: Date.now()+3, data: hoje, tipo: "investimento", subTipo: "juros", categoria: "Investimentos", subcategoria: "Rendimento", observacao: "Juros mensais", valor: 50 }); salvarDados(); atualizarTudo(); alert("Exemplos adicionados com sucesso!"); }
-    function limparTudo() { if(confirm("⚠️ ATENÇÃO! Isso apagará TODAS as transações. Deseja continuar?")) { transacoes = []; salvarDados(); atualizarTudo(); alert("Todos os dados foram removidos!"); } }
+    // ====================== FUNÇÃO EXEMPLOS COM CONFIRMAÇÃO DUPLA ======================
+    function carregarExemplos() {
+        // Primeira confirmação
+        const confirmado = confirm("⚠️ ATENÇÃO! Isso irá ADICIONAR transações de exemplo às suas transações existentes.\n\nDeseja continuar?");
+        
+        if (confirmado) {
+            // Segunda confirmação (double check)
+            const confirmado2 = confirm("🔄 ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja adicionar os exemplos?\n\n(Seus dados atuais serão mantidos, apenas novos exemplos serão adicionados)");
+            
+            if (confirmado2) {
+                const hoje = new Date().toISOString().slice(0,10);
+                transacoes.push(
+                    { id: Date.now(), data: hoje, tipo: "despesa", categoria: "Lazer", subcategoria: "Restaurante", observacao: "Jantar", valor: 120 },
+                    { id: Date.now()+1, data: hoje, tipo: "receita", categoria: "Freelance", subcategoria: "Design", observacao: "Projeto", valor: 500 },
+                    { id: Date.now()+2, data: hoje, tipo: "investimento", subTipo: "aplicar", categoria: "Investimentos", subcategoria: "Ações", observacao: "Compra de ações", valor: 300 },
+                    { id: Date.now()+3, data: hoje, tipo: "investimento", subTipo: "juros", categoria: "Investimentos", subcategoria: "Rendimento", observacao: "Juros mensais", valor: 50 }
+                );
+                salvarDados();
+                atualizarTudo();
+                alert("✅ Exemplos adicionados com sucesso!");
+            }
+        }
+    }
+    
+    function limparTudo() {
+        if(confirm("⚠️ ATENÇÃO! Isso apagará TODAS as transações. Deseja continuar?")) {
+            const confirmado2 = confirm("🔄 ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja remover TODOS os dados?\n\n(Esta ação não pode ser desfeita)");
+            if (confirmado2) {
+                transacoes = [];
+                salvarDados();
+                atualizarTudo();
+                alert("✅ Todos os dados foram removidos!");
+            }
+        }
+    }
     
     // EVENTOS
     document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
